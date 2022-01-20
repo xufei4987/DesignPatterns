@@ -1,4 +1,4 @@
-package com.youxu.dp.a02_principle;
+package com.youxu.dp.a02_principle.version2;
 
 /**
  * 数据采集：负责打点采集原始数据，包括记录每次接口请求的响应时间和请求时间。
@@ -9,11 +9,17 @@ package com.youxu.dp.a02_principle;
 public class Main {
     public static void main(String[] args) {
         MetricsStorage storage = new RedisMetricsStorage();
-        ConsoleReporter consoleReporter = new ConsoleReporter(storage);
+        Aggregator aggregator = new Aggregator();
+        // 定时触发统计并将结果显示到终端
+        ConsoleViewer consoleViewer = new ConsoleViewer();
+        ConsoleReporter consoleReporter = new ConsoleReporter(storage, aggregator, consoleViewer);
         consoleReporter.startRepeatedReport(60, 60);
-        EmailReporter emailReporter = new EmailReporter(storage);
-        emailReporter.addToAddress("wangzheng@xzg.com");
+        // 定时触发统计并将结果输出到邮件
+        EmailViewer emailViewer = new EmailViewer();
+        emailViewer.addToAddress("wangzheng@xzg.com");
+        EmailReporter emailReporter = new EmailReporter(storage, aggregator, emailViewer);
         emailReporter.startDailyReport();
+        // 收集接口访问数据
         MetricsCollector collector = new MetricsCollector(storage);
         collector.recordRequest(new RequestInfo("register", 123, 10234));
         collector.recordRequest(new RequestInfo("register", 223, 11234));

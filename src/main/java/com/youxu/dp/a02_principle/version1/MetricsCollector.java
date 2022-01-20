@@ -1,4 +1,4 @@
-package com.youxu.dp.a02_principle;
+package com.youxu.dp.a02_principle.version1;
 
 import org.apache.commons.lang3.StringUtils;
 
