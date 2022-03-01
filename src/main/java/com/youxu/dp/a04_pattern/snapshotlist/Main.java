@@ -1,7 +1,6 @@
 package com.youxu.dp.a04_pattern.snapshotlist;
 
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
 public class Main {
     public static void main(String[] args) {

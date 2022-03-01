@@ -1,6 +1,6 @@
 # 设计模式
 ## 单例模式
-个类只允许创建一个对象（或者实例），那这个类就是一个单例类，这种设计模式就叫作单例设计模式，简称单例模式
+一个类只允许创建一个对象（或者实例），那这个类就是一个单例类，这种设计模式就叫作单例设计模式，简称单例模式
 
 - 构造函数需要是 private 访问权限的，这样才能避免外部通过 new 创建实例；
 - 考虑对象创建时的线程安全问题；
@@ -500,3 +500,114 @@ public class Application {
 - 迭代器模式让添加新的遍历算法更加容易，更符合开闭原则。除此之外，因为迭代器都实现自相同的接口，在开发中，基于接口而非实现编程，替换迭代器也变得更加容易
 
 迭代的同时删除集合中的元素会出现未决行为，要删除可以利用迭代器的remove()方法
+
+## 访问者模式
+
+允许一个或者多个操作应用到一组对象上，解耦操作和对象本身
+
+对于访问者模式，学习的主要难点在代码实现。而代码实现比较复杂的主要原因是，函数重载在大部分面向对象编程语言中是静态绑定的。也就是说，调用类的哪个重载函数，是在编译期间，由参数的声明类型决定的，而非运行时，根据参数的实际类型决定的
+
+```java
+public abstract class ResourceFile {
+  protected String filePath;
+  public ResourceFile(String filePath) {
+    this.filePath = filePath;
+  }
+  abstract public void accept(Visitor vistor);
+}
+public class PdfFile extends ResourceFile {
+  public PdfFile(String filePath) {
+    super(filePath);
+  }
+  @Override
+  public void accept(Visitor visitor) {
+    visitor.visit(this);
+  }
+  //...
+}
+//...PPTFile、WordFile跟PdfFile类似，这里就省略了...
+public interface Visitor {
+  void visit(PdfFile pdfFile);
+  void visit(PPTFile pdfFile);
+  void visit(WordFile pdfFile);
+}
+public class Extractor implements Visitor {
+  @Override
+  public void visit(PPTFile pptFile) {
+    //...
+    System.out.println("Extract PPT.");
+  }
+  @Override
+  public void visit(PdfFile pdfFile) {
+    //...
+    System.out.println("Extract PDF.");
+  }
+  @Override
+  public void visit(WordFile wordFile) {
+    //...
+    System.out.println("Extract WORD.");
+  }
+}
+public class Compressor implements Visitor {
+  @Override
+  public void visit(PPTFile pptFile) {
+    //...
+    System.out.println("Compress PPT.");
+  }
+  @Override
+  public void visit(PdfFile pdfFile) {
+    //...
+    System.out.println("Compress PDF.");
+  }
+  @Override
+  public void visit(WordFile wordFile) {
+    //...
+    System.out.println("Compress WORD.");
+  }
+}
+public class ToolApplication {
+  public static void main(String[] args) {
+    Extractor extractor = new Extractor();
+    List<ResourceFile> resourceFiles = listAllResourceFiles(args[0]);
+    for (ResourceFile resourceFile : resourceFiles) {
+      resourceFile.accept(extractor);
+    }
+    Compressor compressor = new Compressor();
+    for(ResourceFile resourceFile : resourceFiles) {
+      resourceFile.accept(compressor);
+    }
+  }
+  private static List<ResourceFile> listAllResourceFiles(String resourceDirectory) {
+    List<ResourceFile> resourceFiles = new ArrayList<>();
+    //...根据后缀(pdf/ppt/word)由工厂方法创建不同的类对象(PdfFile/PPTFile/WordFile)
+    resourceFiles.add(new PdfFile("a.pdf"));
+    resourceFiles.add(new WordFile("b.word"));
+    resourceFiles.add(new PPTFile("c.ppt"));
+    return resourceFiles;
+  }
+}
+```
+
+Single Dispatch，指的是执行哪个对象的方法，根据对象的运行时类型来决定；执行对象的哪个方法，根据方法参数的编译时类型来决定
+
+Double Dispatch，指的是执行哪个对象的方法，根据对象的运行时类型来决定；执行对象的哪个方法，根据方法参数的运行时类型来决定
+
+当前主流的面向对象编程语言（比如，Java、C++、C#）都只支持 Single Dispatch，不支持 Double Dispatch
+
+## 备忘录模式
+备忘录模式，也叫快照（Snapshot）模式，定义：在不违背封装原则的前提下，捕获一个对象的内部状态，并在该对象之外保存这个状态，以便之后恢复对象为先前的状态
+
+## 命令模式
+命令模式将请求（命令）封装为一个对象，这样可以使用不同的请求参数化其他对象（将不同请求依赖注入到其他对象），并且能够支持请求（命令）的排队执行、记录日志、撤销等（附加控制）功能
+
+落实到编码实现，命令模式用的最核心的实现手段，是将函数封装成对象
+
+命令模式的主要作用和应用场景，是用来控制命令的执行，比如，异步、延迟、排队执行命令、撤销重做命令、存储命令、给命令记录日志等等，这才是命令模式能发挥独一无二作用的地方
+
+## 解释器模式
+解释器模式为某个语言定义它的语法（或者叫文法）表示，并定义一个解释器用来处理这个语法
+
+## 中介模式
+中介模式定义了一个单独的（中介）对象，来封装一组对象之间的交互。将这组对象之间的交互委派给与中介对象交互，来避免对象之间的直接交互
+
+中介模式的设计思想跟中间层很像，通过引入中介这个中间层，将一组对象之间的交互关系（或者依赖关系）从多对多（网状关系）转换为一对多（星状关系）。原来一个对象要跟 n 个对象交互，现在只需要跟一个中介对象交互，从而最小化对象之间的交互关系，降低了代码的复杂度，提高了代码的可读性和可维护性

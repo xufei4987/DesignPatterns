@@ -4,7 +4,7 @@ public class BInterceptor implements Interceptor{
     @Override
     public boolean preHandle() {
         System.out.println("BInterceptor...preHandle...fail");
-        return false;
+        return true;
     }
 
     @Override
