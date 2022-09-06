@@ -64,4 +64,9 @@ public class RandomIdGenerator implements LogTraceIdGenerator{
         return new String(randomChars);
     }
 
+    public static void main(String[] args) throws IdGenerationFailureException {
+        LogTraceIdGenerator logTraceIdGenerator = new RandomIdGenerator();
+        System.out.println(logTraceIdGenerator.generate());
+    }
+
 }

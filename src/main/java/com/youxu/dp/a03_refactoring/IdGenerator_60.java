@@ -41,4 +41,8 @@ public class IdGenerator_60 {
         }
         return id;
     }
+
+    public static void main(String[] args) {
+        System.out.println(generate());
+    }
 }

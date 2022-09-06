@@ -106,7 +106,7 @@ ResourcePoolConfig config = new ResourcePoolConfig.Builder()
 - 浅拷贝只会复制对象中基本数据类型数据和引用对象的内存地址，不会递归地复制引用对象
 - 深拷贝得到的是一份完完全全独立的对象，更加耗时，更加耗内存空间
 
-##代理模式
+## 代理模式
 1. 代理模式的原理与实现
 
 在不改变原始类（或叫被代理类）的情况下，通过引入代理类来给原始类附加功能。一般情况下，我们让代理类和原始类实现同样的接口。但是，如果原始类并没有定义接口，并且原始类代码并不是我们开发维护的。在这种情况下，我们可以通过让代理类继承原始类的方法来实现代理模式。
@@ -176,6 +176,54 @@ public class TrivialNotification extends Notification {
 jdk i/o类是典型的装饰器实现
   
 ![javaIO.png](../../../../../../../pic/javaIO.png)
+
+```java
+
+// 代理模式的代码结构(下面的接口也可以替换成抽象类)
+public interface IA {
+    void f();
+}
+public class A impelements IA {
+    public void f() { //... }
+    }
+
+    public class AProxy impements IA {
+        private IA a;
+
+        public AProxy(IA a) {
+            this.a = a;
+        }
+
+        public void f() {
+            // 新添加的代理逻辑
+            a.f();
+            // 新添加的代理逻辑
+        }
+    }
+}
+// 装饰器模式的代码结构(下面的接口也可以替换成抽象类)
+public interface IA {
+    void f();
+}
+public class A impelements IA {
+    public void f() { //... }
+    }
+
+    public class ADecorator impements IA {
+        private IA a;
+
+        public ADecorator(IA a) {
+            this.a = a;
+        }
+
+        public void f() {
+            // 功能增强代码
+            a.f();
+            // 功能增强代码
+        }
+    }
+}
+```
 
 ## 适配器模式
 顾名思义，这个模式就是用来做适配的，它将不兼容的接口转换为可兼容的接口，让原本由于接口不兼容而不能一起工作的类可以一起工作
